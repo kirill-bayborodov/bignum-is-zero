@@ -223,7 +223,7 @@ endif
 SAN_LOG_PREFIX := $(BIN_DIR)/sanitize_
 
 ifeq ($(strip $(CONFIG)), release)
-    CFLAGS = $(CFLAGS_BASE) -O2 -march=native $(SAN_CFLAGS)
+    CFLAGS = $(CFLAGS_BASE) -O2 -march=x86-64 $(SAN_CFLAGS)
     ASFLAGS = $(ASFLAGS_BASE)
 else
     CFLAGS = $(CFLAGS_BASE) -g $(SAN_CFLAGS)
