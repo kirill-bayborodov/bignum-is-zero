@@ -233,6 +233,10 @@ endif
 CFLAGS += -Wl,-z,noexecstack
 LDFLAGS += $(SAN_LDFLAGS)
 
+# Helgrind cannot reliably decode every instruction emitted by -march=native.
+# Build Helgrind test binaries with a conservative baseline ISA instead.
+HELGRIND_CFLAGS := $(CFLAGS_BASE) -O1 -g -fno-omit-frame-pointer -march=x86-64 -Wl,-z,noexecstack
+
 # --- Perf-specific settings ---
 ifeq ($(SRC_EXT),asm)
 ASM_LABELS := $(shell grep -E '^[[:space:]]*\.[A-Za-z0-9_].*:' $(ASM_SRC) 2>/dev/null | sed -E 's/^[[:space:]]*\.([A-Za-z0-9_]+):/\1/; s/[[:space:]]\+/|/g' )
@@ -318,6 +322,7 @@ test_sanitize: $(FAMILY_SYMLINK) $(TEST_BINS)
 # Использование:
 #   make test_helgrind
 # Требования: valgrind (apt install valgrind).
+test_helgrind: CFLAGS := $(HELGRIND_CFLAGS)
 test_helgrind: $(FAMILY_SYMLINK) $(TEST_BINS)
 	@echo "=== Running MT tests under Helgrind (CONFIG=$(CONFIG)) ==="
 	@total=0; fail=0; \
